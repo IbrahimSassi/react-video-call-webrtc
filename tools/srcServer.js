@@ -10,7 +10,7 @@ import nodeStatic from 'node-static';
 
 /* eslint-disable no-console */
 
-const port = 9001;
+const port = 11000;
 const app = express();
 const compiler = webpack(config);
 
