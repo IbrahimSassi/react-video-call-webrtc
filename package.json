@@ -1,17 +1,15 @@
 {
-  "name": "pluralsight-redux-starter",
+  "name": "poc-react-video-call",
   "version": "1.0.0",
-  "description": "Starter kit for React and Redux Pluralsight course by Cory House",
+  "description": "Peer to peer video call via WebRTC and react",
   "scripts": {
     "prestart": "babel-node tools/startMessage.js",
-    "start": "npm-run-all --parallel test:watch open:src lint:watch",
+    "start": "npm-run-all --parallel open:src lint:watch",
     "open:src": "babel-node tools/srcServer.js",
     "lint": "node_modules/.bin/esw webpack.config.* src tools",
-    "lint:watch": "npm run lint -- --watch",
-    "test": "mocha --reporter progress tools/testSetup.js \"src/**/*.test.js\"",
-    "test:watch": "npm run test -- --watch"
+    "lint:watch": "npm run lint -- --watch"
   },
-  "author": "Cory House",
+  "author": "Ibrahim sassi",
   "license": "MIT",
   "dependencies": {
     "babel-polyfill": "6.8.0",
@@ -21,15 +19,9 @@
     "node-static": "^0.7.9",
     "react": "15.0.2",
     "react-dom": "15.0.2",
-    "react-redux": "4.4.5",
-    "react-router": "2.4.0",
-    "react-router-redux": "4.0.4",
-    "redux": "3.5.2",
-    "redux-thunk": "2.0.1",
     "simple-peer": "5.11.4",
     "socket.io": "^2.0.3",
-    "socket.io-client": "^2.0.3",
-    "toastr": "2.1.2"
+    "socket.io-client": "^2.0.3"
   },
   "devDependencies": {
     "babel-cli": "6.8.0",
@@ -69,9 +61,5 @@
     "webpack": "1.13.0",
     "webpack-dev-middleware": "1.6.1",
     "webpack-hot-middleware": "2.10.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/coryhouse/pluralsight-redux-starter"
   }
-}
+  }

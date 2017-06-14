@@ -57,6 +57,7 @@ class App extends React.Component {
       });
 
       peer.on('signal', (data) => {
+        console.log('Send signal ..');
         socket.emit('first:userJoin', {
           data: data,
           room: "room-168"
@@ -67,6 +68,7 @@ class App extends React.Component {
 
       //getting other data;      
       socket.on('put:other', (otherData) => {
+        console.log('Get other id ..');
         peer.signal(otherData);
       });
 
@@ -78,9 +80,10 @@ class App extends React.Component {
           loading: false
         });
         console.log("Go to stream");
-        let video = document.querySelector('#remoteVideo');
+         let video = document.querySelector('#remoteVideo');
         video.src = window.URL.createObjectURL(stream);
-        video.play();
+        video.play(); 
+        
       });
     });
   }
@@ -88,16 +91,18 @@ class App extends React.Component {
   render() {
     return (
       <div className="container-fluid">
-        <div >
+        <div className="well">
           <h5>You</h5>
           <video id="localVideo" autoPlay muted></video>
         </div>
-        <h5>Him</h5>
-        {this.state.loading && <span>Loading to establish connection , just a few seconds
-          <img src="https://thomas.vanhoutte.be/miniblog/wp-content/uploads/light_blue_material_design_loading.gif" alt="" />
-        </span>}
-        <video id="remoteVideo" autoPlay></video>
+        <div className="well">
 
+          <h5>Him</h5>
+          {this.state.loading && <span>Loading to establish connection , just a few seconds (30-40sc)
+          <img src="https://design.printexpress.co.uk/wp-content/uploads/2015/10/04-spinner.gif" alt="" width="200" height="200" />
+          </span>}
+          <video id="remoteVideo" autoPlay></video>
+        </div>
       </div>
     );
   }
