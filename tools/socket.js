@@ -1,44 +1,29 @@
-export default socket => {
+export default io => {
 
-    socket.on('connection', (socket) => {
-        console.log('Connected');
+  io.on('connection', (socket) => {
+
+    //connection established
+    console.log('Connected');
+
+    //creating room for each users
+    socket.on('room', (data) => {
+      console.log('new room', data.room);
+      socket.join(data.room);
     });
-    // send the new user their name and a list of users
-    socket.emit('init', {
-        message: "Hello"
+
+    //waiting for the first who connect to extract his data and send it
+    socket.on('first:userJoin', (data) => {
+      console.log('first:userJoin');
+      //sending to specific users
+      socket
+        .broadcast.to(data.room)
+        .emit('put:other',
+        data.data)
     });
-    /*
-      // notify other clients that a new user has joined
-      socket.broadcast.emit('user:join', {
-        name: name
-      });
-    
-      // broadcast a user's message to other users
-      socket.on('send:message', function (data) {
-        socket.broadcast.emit('send:message', {
-          user: name,
-          text: data.text
-        });
-      });
-    
-      // validate a user's name change, and broadcast it on success
-      socket.on('change:name', function (data, fn) {
-        if (userNames.claim(data.name)) {
-          var oldName = name;
-          userNames.free(oldName);
-    
-          name = data.name;
-          
-          socket.broadcast.emit('change:name', {
-            oldName: oldName,
-            newName: name
-          });
-    
-          fn(true);
-        } else {
-          fn(false);
-        }
-      });
-      */
+
+
+
+  });
+
 
 }

@@ -20,20 +20,20 @@ class App extends React.Component {
         navigator.webkitGetUserMedia ||
         navigator.mozGetUserMedia;
 
-      socket.emit('room', { room: "room-168" })
+      socket.emit('room', { room: "room-168" });
 
     }
   }
 
 
-  componentDidMount() {
+  componentWillMount() {
 
     if (navigator.getUserMedia) {
       navigator.getUserMedia({ audio: true, video: { width: 720, height: 430 } },
         (stream) => {
           let video = document.querySelector('#localVideo');
           video.src = window.URL.createObjectURL(stream);
-          video.onloadedmetadata = function (e) {
+          video.onloadedmetadata = (e) => {
             video.play();
           };
         },
@@ -57,26 +57,26 @@ class App extends React.Component {
       });
 
       peer.on('signal', (data) => {
-        console.log("signal called");
         socket.emit('first:userJoin', {
           data: data,
           room: "room-168"
         });
 
-      })
+      });
 
 
+      //getting other data;      
       socket.on('put:other', (otherData) => {
-        console.log("get other data");
-
         peer.signal(otherData);
-      })
+      });
 
 
+
+      //lunching stream
       peer.on('stream', (stream) => {
         this.setState({
           loading: false
-        })
+        });
         console.log("Go to stream");
         let video = document.querySelector('#remoteVideo');
         video.src = window.URL.createObjectURL(stream);
@@ -88,15 +88,15 @@ class App extends React.Component {
   render() {
     return (
       <div className="container-fluid">
-        <div className="well">
+        <div >
           <h5>You</h5>
-          <video id="localVideo" autoplay muted></video>
+          <video id="localVideo" autoPlay muted></video>
         </div>
         <h5>Him</h5>
         {this.state.loading && <span>Loading to establish connection , just a few seconds
           <img src="https://thomas.vanhoutte.be/miniblog/wp-content/uploads/light_blue_material_design_loading.gif" alt="" />
         </span>}
-        <video id="remoteVideo" autoplay></video>
+        <video id="remoteVideo" autoPlay></video>
 
       </div>
     );
