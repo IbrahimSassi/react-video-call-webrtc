@@ -4,49 +4,80 @@
 
 import React, { PropTypes } from 'react';
 import getUserMedia from 'getusermedia';
+const io = require('socket.io-client');
+const socket = io();
+
 class App extends React.Component {
 
   constructor(props, context) {
-    super(props, context)
+    super(props, context);
     {
-      getUserMedia({ video: true, audio: false }, function (err, stream) {
-        if (err) return console.error(err)
+      socket.emit('room', { room: "room-168" })
 
-        var Peer = require('simple-peer')
+      getUserMedia({ video: true, audio: false }, function (err, stream) {
+        if (err) return console.error(err);
+
+        var myId = {};
+        var otherId = {};
+        var Peer = require('simple-peer');
         var peer = new Peer({
           initiator: location.hash === '#init',
           trickle: false,
           stream: stream
-        })
+        });
 
         peer.on('signal', function (data) {
-          document.getElementById('yourId').value = JSON.stringify(data)
+          console.log("signal called");
+          myId = data;
+          console.log("myId", myId);
+          console.log("otherId", otherId);
+          //if (myId == {})
+            socket.emit('first:userJoin', {
+              data: data,
+              room: "room-168"
+            });
+
+          document.getElementById('yourId').value = JSON.stringify(data);
         })
 
+
+        socket.on('put:other', (otherData) => {
+          console.log("get other data");
+          otherId = otherData;
+          console.log("myId", myId);
+          console.log("otherId", otherId);
+
+          document.getElementById('otherId').value = JSON.stringify(otherData);
+          peer.signal(otherId);
+        })
+        
         document.getElementById('connect').addEventListener('click', function () {
-          var otherId = JSON.parse(document.getElementById('otherId').value)
-          peer.signal(otherId)
+          var otherId = JSON.parse(document.getElementById('otherId').value);
+          peer.signal(otherId);
         })
-
-        document.getElementById('send').addEventListener('click', function () {
-          var yourMessage = document.getElementById('yourMessage').value
-          peer.send(yourMessage)
-        })
-
-        peer.on('data', function (data) {
-          document.getElementById('messages').textContent += data + '\n'
-        })
+        
 
         peer.on('stream', function (stream) {
-          var video = document.createElement('video')
-          document.body.appendChild(video)
+          console.log("Go to stream");
+          let video = document.createElement('video');
+          document.body.appendChild(video);
 
-          video.src = window.URL.createObjectURL(stream)
-          video.play()
+          video.src = window.URL.createObjectURL(stream);
+          video.play();
         })
       })
 
     }
+  }
+
+
+  componentDidMount() {
+    /*
+    socket.on('send:message', this._messageRecieve);
+    socket.on('user:join', this._userJoined);
+    socket.on('user:left', this._userLeft);
+    socket.on('change:name', this._userChangedName);
+    */
   }
 
   render() {

@@ -27,6 +27,8 @@
     "redux": "3.5.2",
     "redux-thunk": "2.0.1",
     "simple-peer": "5.11.4",
+    "socket.io": "^2.0.3",
+    "socket.io-client": "^2.0.3",
     "toastr": "2.1.2"
   },
   "devDependencies": {
