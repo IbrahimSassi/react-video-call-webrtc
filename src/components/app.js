@@ -13,90 +13,90 @@ class App extends React.Component {
     super(props, context);
     {
 
+      this.state = {
+        loading: true
+      };
       navigator.getUserMedia = navigator.getUserMedia ||
         navigator.webkitGetUserMedia ||
         navigator.mozGetUserMedia;
 
-
-
       socket.emit('room', { room: "room-168" })
-
-      if (navigator.getUserMedia) {
-        navigator.getUserMedia({ audio: true, video: { width: 1280, height: 720 } },
-          function (stream) {
-            var video = document.querySelector('#localVideo');
-            video.src = window.URL.createObjectURL(stream);
-            video.onloadedmetadata = function (e) {
-              video.play();
-            };
-          },
-          function (err) {
-            console.log("The following error occurred: " + err.name);
-          }
-        );
-      } else {
-        console.log("getUserMedia not supported");
-      }
-
-
-
-      getUserMedia({ video: true, audio: false }, function (err, stream) {
-        if (err) return console.error(err);
-
-        var myId = {};
-        var otherId = {};
-        var Peer = require('simple-peer');
-        var peer = new Peer({
-          initiator: location.hash === '#init',
-          trickle: false,
-          stream: stream
-        });
-
-        peer.on('signal', function (data) {
-          console.log("signal called");
-          myId = data;
-          console.log("myId", myId);
-          console.log("otherId", otherId);
-          //if (myId == {})
-          socket.emit('first:userJoin', {
-            data: data,
-            room: "room-168"
-          });
-
-        })
-
-
-        socket.on('put:other', (otherData) => {
-          console.log("get other data");
-          otherId = otherData;
-          console.log("myId", myId);
-          console.log("otherId", otherId);
-
-          peer.signal(otherId);
-        })
-
-
-        peer.on('stream', function (stream) {
-          console.log("Go to stream");
-          let video = document.createElement('video');
-          document.body.appendChild(video);
-
-          video.src = window.URL.createObjectURL(stream);
-          video.play();
-        })
-      })
 
     }
   }
 
 
   componentDidMount() {
+
+    if (navigator.getUserMedia) {
+      navigator.getUserMedia({ audio: true, video: { width: 720, height: 430 } },
+        (stream) => {
+          let video = document.querySelector('#localVideo');
+          video.src = window.URL.createObjectURL(stream);
+          video.onloadedmetadata = function (e) {
+            video.play();
+          };
+        },
+        (err) => {
+          console.log("The following error occurred: " + err.name);
+        }
+      );
+    } else {
+      console.log("getUserMedia not supported");
+    }
+
+
+
+    getUserMedia({ video: true, audio: false }, (err, stream) => {
+      if (err) return console.error(err);
+      const Peer = require('simple-peer');
+      const peer = new Peer({
+        initiator: location.hash === '#init',
+        trickle: false,
+        stream: stream
+      });
+
+      peer.on('signal', (data) => {
+        console.log("signal called");
+        socket.emit('first:userJoin', {
+          data: data,
+          room: "room-168"
+        });
+
+      })
+
+
+      socket.on('put:other', (otherData) => {
+        console.log("get other data");
+
+        peer.signal(otherData);
+      })
+
+
+      peer.on('stream', (stream) => {
+        this.setState({
+          loading: false
+        })
+        console.log("Go to stream");
+        let video = document.querySelector('#remoteVideo');
+        video.src = window.URL.createObjectURL(stream);
+        video.play();
+      });
+    });
   }
 
   render() {
     return (
       <div className="container-fluid">
-        <video id="localVideo" autoplay muted></video>
+        <div className="well">
+          <h5>You</h5>
+          <video id="localVideo" autoplay muted></video>
+        </div>
+        <h5>Him</h5>
+        {this.state.loading && <span>Loading to establish connection , just a few seconds
+          <img src="https://thomas.vanhoutte.be/miniblog/wp-content/uploads/light_blue_material_design_loading.gif" alt="" />
+        </span>}
+        <video id="remoteVideo" autoplay></video>
 
       </div>
     );
