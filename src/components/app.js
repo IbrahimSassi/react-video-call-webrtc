@@ -12,7 +12,33 @@ class App extends React.Component {
   constructor(props, context) {
     super(props, context);
     {
+
+      navigator.getUserMedia = navigator.getUserMedia ||
+        navigator.webkitGetUserMedia ||
+        navigator.mozGetUserMedia;
+
+
+
       socket.emit('room', { room: "room-168" })
+
+      if (navigator.getUserMedia) {
+        navigator.getUserMedia({ audio: true, video: { width: 1280, height: 720 } },
+          function (stream) {
+            var video = document.querySelector('#localVideo');
+            video.src = window.URL.createObjectURL(stream);
+            video.onloadedmetadata = function (e) {
+              video.play();
+            };
+          },
+          function (err) {
+            console.log("The following error occurred: " + err.name);
+          }
+        );
+      } else {
+        console.log("getUserMedia not supported");
+      }
+
+
 
       getUserMedia({ video: true, audio: false }, function (err, stream) {
         if (err) return console.error(err);
@@ -32,12 +58,11 @@ class App extends React.Component {
           console.log("myId", myId);
           console.log("otherId", otherId);
           //if (myId == {})
-            socket.emit('first:userJoin', {
-              data: data,
-              room: "room-168"
-            });
+          socket.emit('first:userJoin', {
+            data: data,
+            room: "room-168"
+          });
 
-          document.getElementById('yourId').value = JSON.stringify(data);
         })
 
 
@@ -47,15 +72,9 @@ class App extends React.Component {
           console.log("myId", myId);
           console.log("otherId", otherId);
 
-          document.getElementById('otherId').value = JSON.stringify(otherData);
           peer.signal(otherId);
         })
-        
-        document.getElementById('connect').addEventListener('click', function () {
-          var otherId = JSON.parse(document.getElementById('otherId').value);
-          peer.signal(otherId);
-        })
-        
+
 
         peer.on('stream', function (stream) {
           console.log("Go to stream");
@@ -72,27 +91,13 @@ class App extends React.Component {
 
 
   componentDidMount() {
-    /*
-    socket.on('send:message', this._messageRecieve);
-    socket.on('user:join', this._userJoined);
-    socket.on('user:left', this._userLeft);
-    socket.on('change:name', this._userChangedName);
-    */
   }
 
   render() {
     return (
       <div className="container-fluid">
-        <label>Your ID:</label><br />
-        <textarea id="yourId"></textarea><br />
-        <label>Other ID:</label><br />
-        <textarea id="otherId"></textarea>
-        <button id="connect">connect</button><br />
+        <video id="localVideo" autoplay muted></video>
 
-        <label>Enter Message:</label><br />
-        <textarea id="yourMessage"></textarea>
-        <button id="send">send</button>
-        <pre id="messages"></pre>
       </div>
     );
   }
