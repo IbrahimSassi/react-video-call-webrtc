@@ -3,6 +3,6 @@
 
 #### 1. Clone the project
 #### 2. npm install / yarn add
-#### 3. npm start / yarn add
+#### 3. npm start / yarn start
 #### 4. Go to https://localhost:11000/#init for the first user and https://localhost:11000/ for the second
 
